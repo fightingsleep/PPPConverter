@@ -8,56 +8,44 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 const WORLD_BANK_DATA_INDEX = 1;
-const WORLD_BANK_AGGREGATE_TYPE = 'Aggregates';
 let SourcePPP = 0;
 let TargetPPP = 0;
-function getCountries() {
-    return fetch('http://api.worldbank.org/v2/country/all?format=json&per_page=20000')
-        .then(response => response.json())
-        .then(data => data[WORLD_BANK_DATA_INDEX]
-        .filter(x => x.region.value != WORLD_BANK_AGGREGATE_TYPE)
-        .map(x => { return { [x.name]: x.id }; })
-        .reduce((acc, curr) => { return Object.assign(Object.assign({}, acc), curr); }))
-        .catch(() => { console.log("Failed to retrieve the list of countries"); return {}; });
-}
-function getPppForCountry(country) {
+let PPPData;
+function getCountryAndPPPData() {
     const year = new Date().getFullYear();
-    return fetch(`https://api.worldbank.org/v2/en/country/${country}/indicator/PA.NUS.PPP?format=json&per_page=20000&source=2&date=${year - 5}:${year}`)
+    return fetch(`https://api.worldbank.org/v2/en/country/all/indicator/PA.NUS.PPP?format=json&per_page=20000&source=2&date=${year - 5}:${year}`)
         .then(response => response.json())
         .then(data => data[WORLD_BANK_DATA_INDEX]
         .filter(x => x.value != null)
-        .map(x => { return { [x.date]: x.value }; })
-        .reduce((acc, curr) => { return Object.assign(Object.assign({}, acc), curr); }))
-        .catch(() => { console.log(`Failed to retrieve PPP for ${country}`); return {}; });
+        .map(x => { return { 'country': x.country.value, 'date': x.date, 'ppp': x.value }; })
+        .reduce((acc, curr) => {
+        return Object.assign(Object.assign({}, acc), { [curr.country]: Object.assign(Object.assign({}, (acc[curr.country] || [])), { [curr.date]: curr.ppp }) });
+    }, {}))
+        .catch(() => { console.log(`Failed to retrieve country & PPP data`); return {}; });
 }
 function populateCountries() {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield getCountries()
-            .then(countries => Object.keys(countries)
-            .sort()
-            .map(country => {
-            const sourceCountry = document.getElementById('sourceCountry');
-            const targetCountry = document.getElementById('targetCountry');
-            const opt = document.createElement('option');
-            opt.value = countries[country];
-            opt.appendChild(document.createTextNode(country));
-            sourceCountry.appendChild(opt);
-            targetCountry.appendChild(opt.cloneNode(true));
-        }));
+    Object.keys(PPPData)
+        .sort()
+        .map((country) => {
+        const sourceCountry = document.getElementById('sourceCountry');
+        const targetCountry = document.getElementById('targetCountry');
+        const opt = document.createElement('option');
+        opt.value = country;
+        opt.appendChild(document.createTextNode(country));
+        sourceCountry.appendChild(opt);
+        targetCountry.appendChild(opt.cloneNode(true));
     });
 }
 function calculatePPP() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const sourceCountry = document.getElementById('sourceCountry').value;
-        const targetCountry = document.getElementById('targetCountry').value;
-        const sourcePppList = yield getPppForCountry(sourceCountry);
-        const targetPppList = yield getPppForCountry(targetCountry);
-        const sourceDate = Math.max(...Object.keys(sourcePppList).map(x => parseInt(x)));
-        const targetDate = Math.max(...Object.keys(targetPppList).map(x => parseInt(x)));
-        SourcePPP = sourcePppList[sourceDate];
-        TargetPPP = targetPppList[targetDate];
-        updateTargetAmount();
-    });
+    const sourceCountry = document.getElementById('sourceCountry').value;
+    const targetCountry = document.getElementById('targetCountry').value;
+    document.getElementById('sourceCountryName').textContent =
+        document.getElementById('sourceCountry').value;
+    document.getElementById('targetCountryName').textContent =
+        document.getElementById('targetCountry').value;
+    SourcePPP = PPPData[sourceCountry][Math.max(...Object.keys(PPPData[sourceCountry]).map(x => parseInt(x)))];
+    TargetPPP = PPPData[targetCountry][Math.max(...Object.keys(PPPData[targetCountry]).map(x => parseInt(x)))];
+    updateTargetAmount();
 }
 function updateTargetAmount() {
     const sourceAmount = parseFloat(document.getElementById('sourceAmount').value);
@@ -66,11 +54,12 @@ function updateTargetAmount() {
 }
 function initialize() {
     return __awaiter(this, void 0, void 0, function* () {
-        yield populateCountries();
-        yield calculatePPP();
+        PPPData = yield getCountryAndPPPData();
+        populateCountries();
+        calculatePPP();
     });
 }
-$(document).ready(function () {
+$(function () {
     $('.searchableSelect').select2({
         theme: 'bootstrap4',
     });
