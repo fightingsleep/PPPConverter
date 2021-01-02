@@ -1,24 +1,3 @@
-html
-{
-    position: relative;
-    min-height: 100%;
-}
-
-body
-{
-    margin-bottom: 40px; /* Margin bottom by footer height */
-}
-
-.footer
-{
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 40px; /* Set the fixed height of the footer here */
-    line-height: 40px; /* Vertically center the text there */
-    background-color: #f5f5f5;
-}
-
 .title
 {
     color: #003296;
