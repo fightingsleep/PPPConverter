@@ -27,30 +27,33 @@ function populateCountries() {
     Object.keys(PPPData)
         .sort()
         .map((country) => {
-        const sourceCountry = document.getElementById('sourceCountry');
-        const targetCountry = document.getElementById('targetCountry');
-        const opt = document.createElement('option');
-        opt.value = country;
-        opt.appendChild(document.createTextNode(country));
-        sourceCountry.appendChild(opt);
-        targetCountry.appendChild(opt.cloneNode(true));
+        $('#sourceCountry').append($("<option></option>").text(country).val(country));
+        $('#targetCountry').append($("<option></option>").text(country).val(country));
     });
 }
 function calculatePPP() {
-    const sourceCountry = document.getElementById('sourceCountry').value;
-    const targetCountry = document.getElementById('targetCountry').value;
-    document.getElementById('sourceCountryName').textContent =
-        document.getElementById('sourceCountry').value;
-    document.getElementById('targetCountryName').textContent =
-        document.getElementById('targetCountry').value;
+    const sourceCountry = $('#sourceCountry').val();
+    const targetCountry = $('#targetCountry').val();
+    updateCountryText();
     SourcePPP = PPPData[sourceCountry][Math.max(...Object.keys(PPPData[sourceCountry]).map(x => parseInt(x)))];
     TargetPPP = PPPData[targetCountry][Math.max(...Object.keys(PPPData[targetCountry]).map(x => parseInt(x)))];
     updateTargetAmount();
 }
 function updateTargetAmount() {
-    const sourceAmount = parseFloat(document.getElementById('sourceAmount').value);
-    const targetAmount = sourceAmount ? sourceAmount / SourcePPP * TargetPPP : 0;
-    document.getElementById('targetAmount').value = `${targetAmount.toFixed(2)}`;
+    if ($('#sourceAmount').val()) {
+        const sourceAmount = parseFloat($('#sourceAmount').val());
+        $('#sourceAmountLabel').text(sourceAmount);
+        const targetAmount = sourceAmount ? sourceAmount / SourcePPP * TargetPPP : 0;
+        $('#targetAmount').text(`${targetAmount.toFixed(2)}`);
+    }
+    else {
+        $('#sourceAmountLabel').text('_______');
+        $('#targetAmount').text('_______');
+    }
+}
+function updateCountryText() {
+    $('#sourceCountryName, #sourceCountryLabel').text($('#sourceCountry').val());
+    $('#targetCountryName').text($('#targetCountry').val());
 }
 function initialize() {
     return __awaiter(this, void 0, void 0, function* () {
