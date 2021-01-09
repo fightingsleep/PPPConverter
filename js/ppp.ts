@@ -38,10 +38,10 @@ function calculatePPP() : void {
 }
 
 function updateTargetAmount() : void {
-    if ($('#sourceAmount').val()) {
-        const sourceAmount: number = parseFloat($('#sourceAmount').val() as string)
-        $('#sourceAmountLabel').text(sourceAmount)
-        const targetAmount: number = sourceAmount ? sourceAmount / SourcePPP * TargetPPP : 0
+    const sourceAmount: number = parseFloat($('#sourceAmount').val() as string)
+    if (sourceAmount && sourceAmount > 0 || sourceAmount == 0) {
+        $('#sourceAmountLabel').text(`${sourceAmount.toFixed(2)}`)
+        const targetAmount: number = sourceAmount / SourcePPP * TargetPPP
         $('#targetAmount').text(`${targetAmount.toFixed(2)}`)
     }
     else {
