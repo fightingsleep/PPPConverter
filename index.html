@@ -51,10 +51,10 @@
                                     <select class="form-select searchableSelect" aria-label="Target Country" id="targetCountry" onchange="calculatePPP()"></select>
                                 </div>
                             </div>
-                            <div class="row my-3">
+                            <div class="row my-4">
                                 <div class="form-group col">
-                                    <label for="targetAmount" class="mb-2">Equivalent Salary in <span id="targetCountryName"></span>'s Local Currency</label>
-                                    <input class="form-control" type="text" aria-label="Target Amount" id="targetAmount" readonly/>
+                                    You require a salary of <span id="targetAmount">_______</span> in <span id="targetCountryName"></span>'s local currency to live a similar
+                                    quality of life as you would with a salary of <span id="sourceAmountLabel">_______</span> in <span id="sourceCountryLabel"></span>'s local currency.
                                 </div>
                             </div>
                         </form>
@@ -62,12 +62,26 @@
                 </div>
                 <div class="row mx-3 my-3">
                     <div class="col-12 col-sm-10 col-md-9 col-lg-7 col-xl-7">
-                        The foreign exchange rate tells you that a salary of 80,000 Euros can be converted into 100,000 US Dollars. What it doesn't tell you is if 
-                        100,000 USD in America can get you the same standard of living as 80,000 Euros does in France. How much money would you need in America to buy
-                        the same things that you would buy in France?<br/><br/>This is where <a href="https://en.wikipedia.org/wiki/Purchasing_power_parity">
-                        Purchasing Power Parity (PPP)</a> comes in. Converting your salary using PPP helps to give you a better approximation of what your standard of living 
-                        would be like in two different countries. This can be handy to know if you're a remote worker who lives in London, but works for a company in Toronto 
-                        (who pays you in CAD).  
+                        <p>
+                            <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#learnMore" aria-expanded="false" aria-controls="learnMore">
+                                Learn More
+                            </button>
+                        </p>
+                        <div class="collapse" id="learnMore">
+                            <div class="card card-body">
+                                <p>
+                                    The foreign exchange rate tells you that a salary of 80,000 Euros can be converted into 100,000 US Dollars.
+                                    What it doesn't tell you is if 100,000 USD in America can get you the same standard of living as 80,000 Euros does in France.
+                                    How much money would you need in America to buy the same things that you would buy in France?
+                                </p>
+                                <p>
+                                    This is where <a href="https://en.wikipedia.org/wiki/Purchasing_power_parity">Purchasing Power Parity (PPP)</a> comes in.
+                                    Converting your salary using PPP, instead of the exchange rate, helps to give you a better approximation of what your standard
+                                    of living would be like in two different countries. This can be handy to know if you're planning on moving, a remote worker,
+                                    sending money abroad, or many other things.
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

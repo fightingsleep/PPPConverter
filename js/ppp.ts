@@ -20,25 +20,16 @@ function populateCountries() : void {
     (Object.keys(PPPData) as Array<string>)
         .sort()
         .map((country: string) => {
-            const sourceCountry = document.getElementById('sourceCountry')
-            const targetCountry = document.getElementById('targetCountry')
-            const opt = document.createElement('option')
-            opt.value = country
-            opt.appendChild(document.createTextNode(country))
-            sourceCountry.appendChild(opt)
-            targetCountry.appendChild(opt.cloneNode(true))
-        })
+            $('#sourceCountry').append($("<option></option>").text(country).val(country))
+            $('#targetCountry').append($("<option></option>").text(country).val(country))
+        })  
 }
 
 function calculatePPP() : void {
-    const sourceCountry: string = (<HTMLInputElement>document.getElementById('sourceCountry')).value
-    const targetCountry: string = (<HTMLInputElement>document.getElementById('targetCountry')).value;
+    const sourceCountry: string = $('#sourceCountry').val() as string
+    const targetCountry: string = $('#targetCountry').val() as string
 
-    (<HTMLInputElement>document.getElementById('sourceCountryName')).textContent =
-        (<HTMLInputElement>document.getElementById('sourceCountry')).value;
-
-        (<HTMLInputElement>document.getElementById('targetCountryName')).textContent =
-        (<HTMLInputElement>document.getElementById('targetCountry')).value
+    updateCountryText()
 
     SourcePPP = PPPData[sourceCountry][Math.max(...Object.keys(PPPData[sourceCountry]).map(x => parseInt(x)))]
     TargetPPP = PPPData[targetCountry][Math.max(...Object.keys(PPPData[targetCountry]).map(x => parseInt(x)))]
@@ -47,14 +38,26 @@ function calculatePPP() : void {
 }
 
 function updateTargetAmount() : void {
-    const sourceAmount: number = parseFloat((<HTMLInputElement>document.getElementById('sourceAmount')).value)
-    const targetAmount: number = sourceAmount ? sourceAmount / SourcePPP * TargetPPP : 0;
-    (<HTMLInputElement>document.getElementById('targetAmount')).value = `${targetAmount.toFixed(2)}`
+    if ($('#sourceAmount').val()) {
+        const sourceAmount: number = parseFloat($('#sourceAmount').val() as string)
+        $('#sourceAmountLabel').text(sourceAmount)
+        const targetAmount: number = sourceAmount ? sourceAmount / SourcePPP * TargetPPP : 0
+        $('#targetAmount').text(`${targetAmount.toFixed(2)}`)
+    }
+    else {
+        $('#sourceAmountLabel').text('_______')
+        $('#targetAmount').text('_______')
+    }
 }
 
-async function initialize() {
+function updateCountryText() : void {
+    $('#sourceCountryName, #sourceCountryLabel').text($('#sourceCountry').val() as string)
+    $('#targetCountryName').text($('#targetCountry').val() as string)
+}
+
+async function initialize() : Promise<void> {
     PPPData = await getCountryAndPPPData()
-    populateCountries();
+    populateCountries()
     calculatePPP()
 }
 
