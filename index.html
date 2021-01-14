@@ -42,7 +42,7 @@
                             <div class="row my-3">
                                 <div class="form-group col">
                                     <label for="sourceAmount" class="mb-2">Salary in <span id="sourceCountryName"></span>'s Local Currency</label>
-                                    <input class="form-control" type="text" placeholder="Example: 100" aria-label="Source Amount" id="sourceAmount" oninput="updateTargetAmount()"/>
+                                    <input class="form-control" autofocus="autofocus" type="text" placeholder="Example: 100" aria-label="Source Amount" id="sourceAmount" oninput="updateTargetAmount()"/>
                                 </div>
                             </div>
                             <div class="row my-3">
@@ -51,13 +51,25 @@
                                     <select class="form-select searchableSelect" aria-label="Target Country" id="targetCountry" onchange="calculatePPP()"></select>
                                 </div>
                             </div>
-                            <div class="row my-4">
+                            <div class="row my-3">
                                 <div class="form-group col">
-                                    You require a salary of <span id="targetAmount">_______</span> in <span id="targetCountryName"></span>'s local currency to live a similar
-                                    quality of life as you would with a salary of <span id="sourceAmountLabel">_______</span> in <span id="sourceCountryLabel"></span>'s local currency.
+                                    <label for="output" class="mb-2">Output</label>
+                                    <input class="form-control" type="text" aria-label="Output" id="output" readonly/>
                                 </div>
                             </div>
                         </form>
+                    </div>
+                </div>
+                <div class="row mx-3 mb-4 mt-1">
+                    <div class="col-12 col-sm-10 col-md-9 col-lg-7 col-xl-7">
+                        <div class="collapse" id="outputCollapse">
+                            <div class="card card-body">
+                                <p>
+                                    You require a salary of <span id="targetAmount">_______</span> in <span id="targetCountryName"></span>'s local currency to live a similar
+                                    quality of life as you would with a salary of <span id="sourceAmountLabel">_______</span> in <span id="sourceCountryLabel"></span>'s local currency.
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="row mx-3 my-3">
