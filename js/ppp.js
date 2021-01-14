@@ -11,6 +11,13 @@ const WORLD_BANK_DATA_INDEX = 1;
 let SourcePPP = 0;
 let TargetPPP = 0;
 let PPPData;
+/**
+ * Fetches the list of countries and their Purchasing Power Parity from The World Bank
+ *
+ * @returns A Promise to a dictionary whose key is the country name and whose value is
+ * a dictionary whose key is the date and whose value is the PPP value
+ *
+ */
 function getCountryAndPPPData() {
     const year = new Date().getFullYear();
     return fetch(`https://api.worldbank.org/v2/en/country/all/indicator/PA.NUS.PPP?format=json&per_page=20000&source=2&date=${year - 5}:${year}`)
@@ -23,6 +30,9 @@ function getCountryAndPPPData() {
     }, {}))
         .catch(() => { console.log(`Failed to retrieve country & PPP data`); return {}; });
 }
+/**
+ * Populates the list of countries in the country select elements
+ */
 function populateCountries() {
     Object.keys(PPPData)
         .sort()
@@ -31,6 +41,9 @@ function populateCountries() {
         $('#targetCountry').append($("<option></option>").text(country).val(country));
     });
 }
+/**
+ * Calculates and stores the PPP values for the currently selected countries
+ */
 function calculatePPP() {
     const sourceCountry = $('#sourceCountry').val();
     const targetCountry = $('#targetCountry').val();
@@ -39,22 +52,41 @@ function calculatePPP() {
     TargetPPP = PPPData[targetCountry][Math.max(...Object.keys(PPPData[targetCountry]).map(x => parseInt(x)))];
     updateTargetAmount();
 }
+/**
+ * Calculates the resulting salary given the current input salary
+ */
 function updateTargetAmount() {
     const sourceAmount = parseFloat($('#sourceAmount').val());
     if (sourceAmount && sourceAmount > 0 || sourceAmount == 0) {
+        // @ts-ignore
+        new bootstrap.Collapse($('#outputCollapse')[0], { toggle: false }).show();
         $('#sourceAmountLabel').text(`${sourceAmount.toFixed(2)}`);
         const targetAmount = sourceAmount / SourcePPP * TargetPPP;
+        $('#output').val(`${targetAmount.toFixed(2)}`);
         $('#targetAmount').text(`${targetAmount.toFixed(2)}`);
     }
     else {
+        // @ts-ignore
+        new bootstrap.Collapse($('#outputCollapse')[0], { toggle: false }).hide();
         $('#sourceAmountLabel').text('_______');
+        $('#output').val('');
         $('#targetAmount').text('_______');
     }
+    // Return focus to the source salary input
+    window.setTimeout(function () {
+        document.getElementById('sourceAmount').focus();
+    }, 0);
 }
+/**
+ * Update all of the country names on the page
+ */
 function updateCountryText() {
     $('#sourceCountryName, #sourceCountryLabel').text($('#sourceCountry').val());
     $('#targetCountryName').text($('#targetCountry').val());
 }
+/**
+ * Perform a one-time initialization of the entire page
+ */
 function initialize() {
     return __awaiter(this, void 0, void 0, function* () {
         PPPData = yield getCountryAndPPPData();
@@ -62,9 +94,11 @@ function initialize() {
         calculatePPP();
     });
 }
+/**
+ * This is a requirement for our fancy searchable select boxes to work
+ */
 $(function () {
     $('.searchableSelect').select2({
         theme: 'bootstrap4',
     });
 });
-//# sourceMappingURL=ppp.js.map
